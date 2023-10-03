@@ -1,0 +1,137 @@
+﻿
+class Game
+    property allowedWords as List<String> 
+    property player1 as Player
+    property player2 as Player
+    property tileQueue as TileQueue
+
+    constructor(player1 Player, player2 Player,allowedWords List<String>)
+        self.player1 = player1
+        self.player2 = player2 
+        self.allowedWords = allowedWords
+        tileQueue = new QueueOfTiles()
+    end constructor
+
+    procedure initialiseForRandomStart()
+        setStartingHand(player1)
+        setStartingHand(player2)
+        tileQueue.initialise()
+    end procedure
+
+    procedure initialiseStandard()
+        player1.setTilesInHand("EDKUQMCTIK")
+        player2.setTilesInHand("BSA* HT*EPR")
+        tileQueue.initialise()
+    end procedure
+
+    function checkWordIsValid(word String) as String
+        return allowedWords.contains(word)
+    end function
+
+    procedure setStartingHand(player Player)
+        var hand = ""
+        for count = 0 to startHandSize - 1
+            var item = ""
+            tileQueue.remove(item)
+            hand = hand + item
+            tileQueue.add()
+        end for
+        player.setTilesInHand(hand)
+    end procedure
+
+    function isPlayable() as Boolean
+        return player1.tilesPlayed <= maxTilesPlayed and
+            player2.tilesPlayed <= maxTilesPlayed and
+            player1.tilesInHand.length() < maxHandSize and
+            player2.tilesInHand.length() < maxHandSize
+    end function
+
+    procedure updateScoresWithPenalty()
+        player1.deductAnyPenalty()
+        player2.deductAnyPenalty()
+    end procedure
+
+    function checkWordIsInTiles(word String, player Player) as Boolean
+        var inTiles = true
+        var copyOfTiles = player.tilesInHand
+        for count = 0 to word.length() - 1
+            if copyOfTiles.contains(word[count]) then
+               copyOfTiles = copyOfTiles.remove(copyOfTiles.indexOf(word[count]), 1)
+            else if copyOfTiles.contains('*') then
+               copyOfTiles = copyOfTiles.remove(copyOfTiles.indexOf('*'), 1)
+            else
+                    inTiles = false
+            end if
+        end for
+        return inTiles
+    end function
+
+    procedure updateAfterAllowedWord(player Player, word String)
+        var wordAsPlayed = player.wordAsWouldBePlayed(word)
+        player.removeLetters(wordAsPLayed)
+        player.addToScore(getScoreForWord(wordAsPlayed))
+    end procedure
+
+    function getScoreForWord(word String) as Int
+        var score = 0
+        for count = 0 to word.length() - 1
+            score = score + tileDictionary[word[count]]
+        end for
+        if word.length() > 7 then
+            score = score + 20
+        else if word.length() > 5 then
+            score = score + 5
+        end if
+        return score
+    end function
+
+    function listTileValues(player Player) as String
+        var values = "                  "
+        for c in player.tilesInHand
+            values = values + tileDictionary[c]
+        end for
+        return values
+    end function
+
+    function showTileQueue() as String
+        return tileQueue.show()
+    end function
+
+    procedure addEndOfTurnTiles(player Player, newTileChoice String, word String)
+        var noOfEndOfTurnTiles = 0
+        if newTileChoice is "1" then
+                noOfEndOfTurnTiles = word.length()
+        else if newTileChoice is "2" then
+                noOfEndOfTurnTiles = 3
+        else
+                noOfEndOfTurnTiles = word.length() + 3
+        end if
+        for count = 0 to noOfEndOfTurnTiles - 1
+            letter = ""
+            tileQueue.withdrawNextLetter(letter)
+            player.addToLetters(letter)
+            tileQueue.add()
+        end for
+    end procedure
+
+
+    function tileValuesAsString() as String
+        var s = "\nTILE VALUES\n"
+        for tile in tileDictionary
+            s = s + "Point for {tile.Key}: {tile.Value}"
+        end for
+        s = s + newline()
+        return s
+    end function
+
+
+    procedure fillHandWithTiles(player Player)
+        while player.tilesInHand.length() <= maxHandSize
+            var letter = ""
+            tileQueue.withdrawNextLetter(letter)
+            player.addToLetters(tiletterle)
+            tileQueue.add()
+        end while
+    end procedure
+
+end class

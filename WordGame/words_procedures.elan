@@ -1,0 +1,123 @@
+﻿
+procedure play(game Game)    
+    while game.isPlayable()       
+        haveTurn(game.player1, game)
+        getKey("Press Enter to continue") 
+        printLine()
+        haveTurn(game.player2, game)
+    end while
+    game.updateScoresWithPenalty()
+    displayWinner(game)
+end procedure
+
+procedure loadAllowedWords(allowedWords List< String >)
+    try
+        var file = openRead("aqawords.txt")
+        while not fileReader.endOfStream
+            var line = file.readLine()
+            allowedWords =allowedWords.add(line.trim().toUpper())
+        end while
+        file.close()
+    catch e Exception
+        allowedWords.clear()
+    end try
+end procedure
+
+procedure getChoice(choice String)
+    var choice = ""
+    print(menu3)
+    choice = input("> ")
+    print(newLine())
+    choice = choice.toUpper()
+end procedure
+
+procedure getNewTileChoice(newTileChoice String)
+    repeat
+        print(tileChoiceMenu)
+        newTileChoice = input("> ")
+    until tileMenuChoices.contains(newTileChoice)
+end procedure
+
+procedure displayWinner(game Game)
+    var player1 = game.player1
+    var player2 = game.player2
+    var score1 = player1.score
+    var score2 = player2.score
+    print("**** GAME OVER! ****" + newline(2))
+    print("{player1} your score is {score1}")
+    print("{player2} your score is {score2}")
+    if score1 > score2 then
+        print("{player1} wins!" + newline(2))
+    else if score2 > score1 then
+        print("{player2} wins!" + newline(2))
+    else
+        print("It is a draw!" + newline(2))
+    end if
+end procedure
+
+procedure haveTurn(player Player, game Game)
+    print("{player.name} it is your turn.")
+    print("Your current hand {player.tilesInHand}")
+    print(game.listTileValues(player))
+    var newTileChoice = "2"
+    var validChoice = false
+    var validWord = false
+    var choice = ""
+    while not validChoice
+        getChoice(choice)
+         if choice is "1" then
+             print(game.tileValuesAsString())
+         else if choice is "4" then
+             print(game.showTileQueue())
+         else if choice is "7" then
+             print(game.listTileValues(player))
+         else if choice is "0" then
+             validChoice = true
+             game.fillHandWithTiles(player)
+         else
+             validWord = game.checkWordIsInTiles(choice, player)
+         end if
+         if validWord then
+             validWord = game.checkWordIsValid(choice)
+             if validWord then
+                 print(newline() + "Valid word")
+                 game.updateAfterAllowedWord(player, choice)
+                 newTileChoice = getNewTileChoice()
+             end if
+         end if
+         if not validWord then
+              print("Not a valid attempt, you lose your turn.")
+         end if
+            if newTileChoice <> "4"  then
+                game.addEndOfTurnTiles(player, newTileChoice, choice)
+            end if
+            print("Your word was {choice}")
+            print("Your new score is {player.score}")
+            print("You have played {player.tilesPlayed} tiles so far in this game.")
+end while
+end procedure
+
+constant welcome = "
+++++++++++++++++++++++++++++++++++++++
+Welcome to the WORDS WITH AQA game
+++++++++++++++++++++++++++++++++++++++
+
+
+"
+
+constant tileChoiceMenu = "
+Do you want to
+     replace the tiles you used(1) OR
+     get three extra tiles(2) OR
+     replace the tiles you used and get three extra tiles(3) OR
+     get no new tiles(4) ? "
+
+constant menu3 = "
+Either
+    enter the word you would like to play OR
+    press 1 to display the letter values OR
+    press 4 to view the tile queue OR
+    press 7 to view your tiles again OR
+    press 0 to fill hand and stop the game" 
+
+constant tileMenuChoices = { "1", "2", "3", "4" }

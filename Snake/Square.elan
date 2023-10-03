@@ -1,0 +1,29 @@
+﻿ class Square
+    property x as Int
+    property y as Int
+
+    constructor (x Int, y Int)
+        self.x = x
+        self.y = y
+    end constructor
+
+    function Square getAdjacentSquare(d Direction) as Square
+        var newX = x
+        var newY = y
+        switch d
+            case Direction.Left
+                newX = newX - 2     # Horizontal adjacent is +/- 2 because a square is 2 display chars wide
+            case Direction.Right
+                newX = newX + 2
+            case Direction.Up
+                newY = newY - 1 
+            case Direction.Down
+                newY = newY + 1
+        end switch
+        return new Square(newX, newY)
+    end function
+
+    function isSameSquareAs(Square sq) as Bool -> x == sq.x && y == sq.y
+
+    function asString() as String -> "{x},{y}"
+end class

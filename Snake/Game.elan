@@ -1,0 +1,50 @@
+﻿class Game
+    private property width as Int
+    private property height as Int
+    private property snake as Snake
+    property head as Square
+    property apple as Square
+
+    constructor (width Int, height Int, startingDirection Direction)
+        self.width = width
+        self.height = height;
+        var halfW = width / 2;
+        var halfH = height / 2;
+        var centreW = if halfW % 2 is 0 then halfW else halfW + 1 # Ensure even number
+        var centreH = if halfH % 2 is 0 then halfH else halfH + 1 
+        snake = new Snake(centreW, centreH, startingDirection) 
+        head = snake.head
+        tail = snake.tail()
+        setNewApplePosition()
+    end constructor
+
+    function tail() as Square ->  =>  body.peek()
+
+    prodedure clockTick(Direction d, continue Bool)
+        snake.advanceHeadOneSquare(d)
+        head = snake.head
+        if head.isSameSquareAs(apple) then
+            apple = getNewApplePosition();
+        else
+            snake.advanceTailOneSquare();
+        end if
+        tail = snake.tail()
+        return not hasHitEdge() and  not snake.hasHitItself()
+    end procedure
+
+    function hasHitEdge() as Bool
+        var x = snake.head.x
+        var y = snake.head.y
+        return x < 0 or y < 0 or x == width or y == height
+    end function
+
+    private procedure setNewApplePosition()
+        var sq = new Square(0,0)
+        repeat
+            sq = new Square(random((width-2) / 2) * 2, random((height -2)/ 2) * 2-2);
+        until not snake.bodyCovers(sq)
+        apple = sq
+    end procedure
+
+    function getScore() as Int -> snake.length() - 2
+end class
