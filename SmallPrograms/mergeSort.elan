@@ -1,0 +1,11 @@
+
+function mergeSort(list List<String>) as List<String> ->  
+    let mid = list.len() div 2 in
+    if list.len() < 2 then list 
+    else merge(mergeSort(list[..mid]), mergeSort(list[mid..]))
+
+function merge(a List<String>, b List<String>) as List<String> ->
+    if a.isEmpty() then b 
+    else if b.isEmpty() then a
+    else if head(a) < head(b) then head(a) + merge(tail(a), b) 
+    else head(b) + merge(a, tail(b))

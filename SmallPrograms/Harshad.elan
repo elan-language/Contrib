@@ -1,0 +1,13 @@
+﻿
+main
+   repeat
+       print("Enter an integer greater than 0 to see if it's a Harshad number, less than or equal to 0 to finish: ")
+
+       var n = inputint
+       if n > 0 then
+           print(isHarshad(n))
+       end if
+   until n <= 0
+end main
+
+function isHarshad(n Int) as Bool -> (n mod n.asString()).reduce(lambda (ch, soFar) -> soFar + ch.asInteger() - '0'.asInteger()) is 0
