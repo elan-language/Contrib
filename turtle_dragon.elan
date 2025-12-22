@@ -1,4 +1,4 @@
-# 9b9cd634b6f2eee30a4dd87cfc5ac9e1fbb44fa08cc628b99ebf8752d407fddd Elan 1.3.1 guest default_profile valid
+# 88f8baff1b82e6059b7412cee1a90df952b9a91aab81e4558a6a92eac06864c6 Elan 1.9.0 guest default_profile valid
 
 main
   let order be inputIntBetween("Enter order of dragon [1..12]: ", 1, 12)
@@ -20,7 +20,7 @@ constant left set to "1"
 constant right set to "0"
 
 procedure drawDragon(t as Turtle, order as Int, turns as String, side as Float, corner as Float)
-  let p be 200 div order
+  let p be (200/order).floor()
   variable turnI set to 0
   each turn in turns
     set turnI to (if turn is left then 1 else -1)
