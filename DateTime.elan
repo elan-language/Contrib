@@ -1,11 +1,11 @@
-# b78554b3956925b31d74b94f0427ba785c2fd31b4e82c7022ab573d4785d2545 Elan 1.4.0 guest default_profile valid
+# 9af6c1a3b894ce14b703a0ec5d75a0c5ecf48236dc1be13b85578d3e08213e81 Elan 1.9.0 guest default_profile valid
 
 main
   variable reply set to ""
   repeat
     set reply to inputString('RETURN for time now or\nUnix time (positive integer) or\nQ to quit')
     if reply is "" then
-      call printDate(clock() div 1000)
+      call printDate((clock()/1000).floor())
     else
       variable t, d set to parseAsInt(reply)
       if t and (d >= 0) then
@@ -27,11 +27,11 @@ end procedure
 
 function dateTime(unixSecs as Int) returns (Int, Int, Int, Int, Int, Int)
   # get separate values from Unix time
-  let hour be ((unixSecs div 60) div 60) mod 24
-  let minute be (unixSecs div 60) mod 60
+  let hour be ((unixSecs/60).floor()/60).floor() mod 24
+  let minute be (unixSecs/60).floor() mod 60
   let second be (unixSecs mod 60)
   # days and years from Unix epoch
-  let unixDay be unixSecs div daySecs
+  let unixDay be (unixSecs/daySecs).floor()
   let years be ((unixDay + 1)/365.24).floor()
   # this year and weekday
   let year be unixYear + years
@@ -61,7 +61,7 @@ function leap(year as Int) returns Boolean
   variable leapYear set to false
   if (year mod 4) is 0 then
     set leapYear to true
-    if ((year mod 100) is 0) and (((year div 100) mod 4) isnt 0) then
+    if ((year mod 100) is 0) and (((year/100).floor() mod 4) isnt 0) then
       set leapYear to false
     end if
   end if
