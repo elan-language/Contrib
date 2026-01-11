@@ -1,4 +1,4 @@
-# 573af76152cec858c78ea0e3f0cf927c619d6042c504872ce76234267846f4ff Elan 1.7.0 guest default_profile valid
+# 565ba888b488123f9a698c1bfff6633c77710958dcc5293db977fbd1b7fa0969 Elan 1.8.2 guest default_profile valid
 
 # Hodgepodge, after M.Gerhardt, H.Schuster, J.Tyson (1990) 
 # A Cellular Automaton Model of Excitable Media
@@ -34,10 +34,10 @@ main
   variable podge set to new Array2D<of Int>(gW, gH, 0)
   # initial colours of grid
   call updateGrid(hodge, podge, true)
-  repeat
+  while not uniform(hodge)
     # successive updates to grid
     call updateGrid(hodge, podge, false)
-  end repeat when uniform(hodge)
+  end while
 end main
 
 procedure updateGrid(out hodge as Array2D<of Int>, podge as Array2D<of Int>, initial as Boolean)
