@@ -1,4 +1,4 @@
-# 88f8baff1b82e6059b7412cee1a90df952b9a91aab81e4558a6a92eac06864c6 Elan 1.9.0 guest default_profile valid
+# 6a8426774b02469e53abb665b612017919b2b7d536fa8690a153cd0cd1b073c5 Elan 1.9.0 guest default_profile valid
 
 main
   let order be inputIntBetween("Enter order of dragon [1..12]: ", 1, 12)
@@ -56,7 +56,7 @@ function reflect(s as String) returns String
   return sR
 end function
 
-test 
+test test
   assert reflect("110") is "100"
   assert reflect("00001") is "01111"
   assert setTurns("1") is "11"
