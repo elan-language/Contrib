@@ -1,4 +1,4 @@
-# 998b4c3144ba2e508e62d35f196b952ffacd99a60e400abbc8b0196e7f746741 Elan 1.4.0 guest default_profile valid
+# 67597cd70b66f6d0f6df029af44d6203774879bccfbd8b65a131720072f4ac49 Elan 1.8.2 guest default_profile valid
 
 function pad(d as String, p as String, s as String) returns String
   # d: L or R for pad left or right
