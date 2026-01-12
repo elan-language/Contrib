@@ -1,4 +1,4 @@
-# 04bad19754d3afedb1339240df41357d0ee54658777efb2f886fb79a4830aa08 Elan 1.9.0 guest default_profile valid
+# d4efb54ef2d0a16d414975e5a27092f0f948311cb3e99300e9e7e36e5c14667f Elan 1.9.0 guest default_profile valid
 
 main
   variable reply set to ""
@@ -73,7 +73,7 @@ function monthDay(startDays as List<of Int>, dayNumber as Int) returns (Int, Int
   variable month set to 1
   variable day set to 0
   variable monthFound set to false
-  while monthFound is false
+  while not monthFound
     if (dayNumber < startDays[month]) then
       set monthFound to true
       set day to dayNumber - startDays[month - 1] + 1

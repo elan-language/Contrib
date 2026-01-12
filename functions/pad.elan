@@ -1,4 +1,4 @@
-# 67597cd70b66f6d0f6df029af44d6203774879bccfbd8b65a131720072f4ac49 Elan 1.8.2 guest default_profile valid
+# c78aefe04a082341a1a0ebb05710284eba2a2034e7fde0a79c6534f2f4fcb386 Elan 1.9.0 guest default_profile valid
 
 function pad(d as String, p as String, s as String) returns String
   # d: L or R for pad left or right
@@ -8,14 +8,16 @@ function pad(d as String, p as String, s as String) returns String
   if p.length() > s.length() then
     if d.upperCase() is "L" then
       set sR to (p + s)[(p + s).length() - p.length()..]
-    else if d.upperCase() is "R" then
-      set sR to (s + p)[..p.length()]
+    else
+      if d.upperCase() is "R" then
+        set sR to (s + p)[..p.length()]
+      end if
     end if
   end if
   return sR
 end function
 
-test pad(direction, pattern string, input string)
+test test_pad
   let sp10 be "          "
   assert pad("L", "0000", "34") is "0034"
   assert pad("l", sp10, "Monday") is "    Monday"
