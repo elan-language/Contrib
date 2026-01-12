@@ -1,8 +1,8 @@
-# 9af6c1a3b894ce14b703a0ec5d75a0c5ecf48236dc1be13b85578d3e08213e81 Elan 1.9.0 guest default_profile valid
+# 04bad19754d3afedb1339240df41357d0ee54658777efb2f886fb79a4830aa08 Elan 1.9.0 guest default_profile valid
 
 main
   variable reply set to ""
-  while reply.upperCase() is "Q"
+  while reply.upperCase() isnt "Q"
     set reply to inputString('RETURN for time now or\nUnix time (positive integer) or\nQ to quit')
     if reply is "" then
       call printDate((clock()/1000).floor())
@@ -12,7 +12,7 @@ main
         call printDate(d)
       end if
     end if
-  end while 
+  end while
 end main
 
 procedure printDate(unixSecs as Int)
