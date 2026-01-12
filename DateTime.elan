@@ -1,8 +1,8 @@
-# 9af6c1a3b894ce14b703a0ec5d75a0c5ecf48236dc1be13b85578d3e08213e81 Elan 1.9.0 guest default_profile valid
+# d4efb54ef2d0a16d414975e5a27092f0f948311cb3e99300e9e7e36e5c14667f Elan 1.9.0 guest default_profile valid
 
 main
   variable reply set to ""
-  repeat
+  while reply.upperCase() isnt "Q"
     set reply to inputString('RETURN for time now or\nUnix time (positive integer) or\nQ to quit')
     if reply is "" then
       call printDate((clock()/1000).floor())
@@ -12,7 +12,7 @@ main
         call printDate(d)
       end if
     end if
-  end repeat when reply.upperCase() is "Q"
+  end while
 end main
 
 procedure printDate(unixSecs as Int)
@@ -73,14 +73,14 @@ function monthDay(startDays as List<of Int>, dayNumber as Int) returns (Int, Int
   variable month set to 1
   variable day set to 0
   variable monthFound set to false
-  repeat
+  while not monthFound
     if (dayNumber < startDays[month]) then
       set monthFound to true
       set day to dayNumber - startDays[month - 1] + 1
     else
       set month to month + 1
     end if
-  end repeat when monthFound
+  end while
   return tuple(month, day)
 end function
 
@@ -126,8 +126,10 @@ function pad(d as String, p as String, s as String) returns String
   if p.length() > s.length() then
     if d.upperCase() is "L" then
       set sR to (p + s)[(p + s).length() - p.length()..]
-    else if d.upperCase() is "R" then
-      set sR to (s + p)[..p.length()]
+    else
+      if d.upperCase() is "R" then
+        set sR to (s + p)[..p.length()]
+      end if
     end if
   end if
   return sR
