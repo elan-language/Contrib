@@ -126,10 +126,8 @@ function pad(d as String, p as String, s as String) returns String
   if p.length() > s.length() then
     if d.upperCase() is "L" then
       set sR to (p + s)[(p + s).length() - p.length()..]
-    else
-      if d.upperCase() is "R" then
-        set sR to (s + p)[..p.length()]
-      end if
+    elif d.upperCase() is "R" then
+      set sR to (s + p)[..p.length()]
     end if
   end if
   return sR
