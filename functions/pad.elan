@@ -1,4 +1,4 @@
-# c78aefe04a082341a1a0ebb05710284eba2a2034e7fde0a79c6534f2f4fcb386 Elan 1.9.0 guest default_profile valid
+# daad1804d7f8e8e82caf244845d18d57d4c9095352d5bf271e791f4cedde0e03 Elan 2.0.0-alpha guest default_profile valid
 
 function pad(d as String, p as String, s as String) returns String
   # d: L or R for pad left or right
@@ -18,7 +18,7 @@ function pad(d as String, p as String, s as String) returns String
 end function
 
 test test_pad
-  let sp10 be "          "
+  constant sp10 set to "          "
   assert pad("L", "0000", "34") is "0034"
   assert pad("l", sp10, "Monday") is "    Monday"
   assert pad("r", "---------", "34") is "34-------"
