@@ -107,5 +107,10 @@ a: print("z = {z}")
 a: print("z = {z}")
 ```
 
+I haven't touched on how we handle lists.  It needs more thought.
 
-
+```
+Elan: set a to l.withAppend(5) 
+a: a = elan.withAppend(l, 5) 
+b: a = l + [5] 
+```
