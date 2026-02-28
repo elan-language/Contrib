@@ -1,6 +1,78 @@
 
 ## Python library notes
 
+The older notes at the end of this dcument.
+
+### Table of pure standalone functions, as a start.
+
+The functions are in the  order they appear in `src/compiler/standard-library/std-lib.ts`.
+
+| Elan | Python | Note |
+|------|--------|------|
+| unicode(n) | chr(n) |    |
+| sequence(start, end, step) | range(start, end + 1, step) | (1) (7) |
+| divAsInt(n1, n2) | math.floor(n1/n2) | (2) (7) |
+| divAsFloat(n1, n2) | (n1/n2) | (7) |
+| power(n1, n2) | pow(n1, n2) | (3) |
+| maxFloat(source) | max(source) |    |
+| maxInt(source) | max(source) |    |
+| minFloat(source) | min(source) |    |
+| minInt(source) | min(source) |    |
+| parseAsFloat(s) | elan.parseAsFloat(s) |    |
+| parseAsInt(s) | elan.parseAsInt(s) |    |
+| createList(x, value) | [value for n in range(x)] |    |
+| abs(x) | abs(x) |    |
+| acos(x) | math.acos(x) |    |
+| acosDeg(n) | math.degrees(math.acos(n)) |    |
+| asin(x) | math.asin(x) |    |
+| asinDeg(n) | math.degrees(math.asin(n)) |    |
+| atan(x) | math.atan(x) |    |
+| atanDeg(n) | math.degrees(math.atan(n)) |    |
+| cos(x) | math.cos(x) |    |
+| cosDeg(n) | math.cos(math.radians(n)) |    |
+| exp(x) | math.exp(x) |    |
+| logE(x) | math.log(x) |    |
+| log10(x) | math.log10(x) |    |
+| log2(x) | math.log2(x) |    |
+| sin(x) | math.sin(x) |    |
+| sinDeg(n) | math.sin(math.radians(n)) |    |
+| sqrt(x) | math.sqrt(x) |    |
+| tan(x) | math.tan(x) |    |
+| tanDeg(n) | math.tan(math.radians(n)) |    |
+| degToRad(d) | math.radians(d) |    |
+| radToDeg(r) | math.degrees(r) |    |
+| bitAnd(a, b) | (a & b) | (7) |
+| bitOr(a, b) | (a \| b) | (7) |
+| bitXor(a, b) | (a ^ b) | (7)  |
+| bitNot(a) | ~a | (7) |
+| bitShiftL(value, shift) | (value << shift) |  (7)   |
+| bitShiftR(value, places) | (value & (1<<32)-1) >> places | (4)(7) |
+| createFileForWriting(fileName) | TBD |    |
+| createBlockGraphics(colour) | TBD |    |
+| shallowCopy(toCopy) | list(toCopy) or dict(toCopy) | (6) |
+
+#### Notes
+
+(1) sequence: or list(range(start, end + 1, step)) may be necessary if the simpler version doesn't work
+in some circumstances.
+
+(2) int() truncates towards zero
+
+(3) math.pow() is subtly different from global pow()
+
+(4) Elan does bitShiftR unsigned, on 32-bit integers.
+
+(5) [note deleted].
+
+(6) It may be possible to emit the correct code depending on the type of the object being copied.
+
+(7) For simplicity I have written eg "a/b".  If a or b are expressions
+rather than literals or variables, the generated code should be eg "(a)/(b)".
+
+----
+
+### Notes from 26th February
+
 We have to decide whether the Python version should be:
 - (a) Python syntax and Elan libraries, or
 - (b) Python syntax and Python libraries, as far as we can.
