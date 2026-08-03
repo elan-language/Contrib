@@ -1,4 +1,4 @@
-# 057b92761a1dfb236ec880e2460b1ff28b89cf459979032290fce520b202d795 Elan 2.0.0-alpha1 valid
+# ca82796fd1cedb392bf2961728d52d5e299a81bc4ffd2d300cbcab10b7fc4260 Elan 2.0.0-beta3 valid
 
 function pad(d as String, p as String, s as String) returns String
   # d: L or R for pad left or right
@@ -8,13 +8,13 @@ function pad(d as String, p as String, s as String) returns String
   variable lp set to p.length()
   if lp > s.length() then
     if d.upperCase().equals("L") then
-      set sR to p + s
+      assign sR to p + s
       variable lps set to sR.length()
-      set sR to sR.subString(lps - lp, lps)
+      assign sR to sR.subString(lps - lp, lps)
     else
       if d.upperCase().equals("R") then
-        set sR to s + p
-        set sR to sR.subString(0, lp)
+        assign sR to s + p
+        assign sR to sR.subString(0, lp)
       end if
     end if
   end if
@@ -22,11 +22,11 @@ function pad(d as String, p as String, s as String) returns String
 end function
 
 test test_pad
-  constant sp10 set to "          "
-  constant hy8 set to "---------"
-  assert pad("L", "0000", "34") is "0034"
-  assert pad("l", sp10, "Monday") is "    Monday"
-  assert pad("r", hy8, "34") is "34-------"
-  assert pad("R", sp10, "Tuesday") is "Tuesday   "
-  assert pad("", sp10, "Tue") is "Tue"
+  variable sp10 set to "          "
+  variable hy8 set to "---------"
+  assert pad("L", "0000", "34") evaluates to "0034"
+  assert pad("l", sp10, "Monday") evaluates to "    Monday"
+  assert pad("r", hy8, "34") evaluates to "34-------"
+  assert pad("R", sp10, "Tuesday") evaluates to "Tuesday   "
+  assert pad("", sp10, "Tue") evaluates to "Tue"
 end test
