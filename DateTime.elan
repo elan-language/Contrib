@@ -1,54 +1,83 @@
-# 6a406e2ebf0fb7e6d73778ce5aca260bae595793f4027b8007a386a7e8915345 Elan 1.9.0 guest default_profile valid
+# abae95600d4a0fa85c9f982d87814f68b9b9e5e7f9abbf8df8ad7828e26e5817 Elan 2.0.0-alpha1 valid
 
 main
   variable reply set to ""
-  while reply.upperCase() isnt "Q"
-    set reply to inputString('RETURN for time now or\nUnix time (positive integer) or\nQ to quit')
-    if reply is "" then
-      call printDate((clock()/1000).floor())
+  while not reply.upperCase().equals("Q")
+    set reply to input("RETURN for time now, or Unix time (positive integer), or Q to quit")
+    if reply.equals("") then
+      constant now set to divAsInt(clock(), 1000)
+      call print($"Unix time = {now} since 1970-01-01 00:00:00")
+      call print($"which is {getDate(now)}\n")
     else
-      variable t, d set to parseAsInt(reply)
-      if t and (d >= 0) then
-        call printDate(d)
+      variable td set to parseAsInt(reply)
+      if td.item_0 and (td.item_1 >= 0) then
+        call print($"Unix time = {td.item_1} since 1970-01-01 00:00:00")
+        call print($"which is {getDate(td.item_1)}\n")
+        call print(getDate(td.item_1))
       end if
     end if
   end while
 end main
 
-procedure printDate(unixSecs as Int)
-  let hour, minute, second, days, year, weekday be dateTime(unixSecs)
-  let h be pad("L", z2, hour.asString())
-  let m be pad("L", z2, minute.asString())
-  let s be pad("L", z2, second.asString())
-  let startDaysL be startDaysList(year, startDays)
-  let month, day be monthDay(startDaysL, (days mod startDays[12]))
-  print weekdayNames[weekday] + cs + pad("L", z2, day.asString()) + s1 + monthNames[month - 1] + s1 + "{year}" + s1 + h + co + m + co + s + " UTC\n"
+procedure printTime(t as String)
+
 end procedure
+
+function getDate(unixSecs as Int) returns String
+  variable dt set to dateTime(unixSecs)
+  constant hour set to dt.item_0
+  constant minute set to dt.item_1
+  constant second set to dt.item_2
+  constant days set to dt.item_3
+  constant year set to dt.item_4
+  constant weekday set to dt.item_5
+  constant z2 set to "00"
+  constant h set to padLwithZero(hour)
+  constant m set to padLwithZero(minute)
+  constant s set to padLwithZero(second)
+  variable startDays set to getStartDays()
+  variable startDaysL set to startDaysList(year, startDays)
+  variable month_day set to monthDay(startDaysL, (days mod startDays[12]))
+  constant month set to month_day.item_0
+  constant day set to month_day.item_1
+  constant dayName set to getWeekdayName(weekday)
+  constant d set to padLwithZero(day)
+  constant monthName set to getMonthName(month)
+  return $"{dayName}, {d} {monthName} {year} {h}:{m}:{s} UTC"
+end function
+
+test test_getDate
+  assert getDate(1774946991) is "Tue, 31 Mar 2026 08:49:51 UTC"
+end test
 
 function dateTime(unixSecs as Int) returns (Int, Int, Int, Int, Int, Int)
   # get separate values from Unix time
-  let hour be ((unixSecs/60).floor()/60).floor() mod 24
-  let minute be (unixSecs/60).floor() mod 60
-  let second be (unixSecs mod 60)
+  constant hour set to (divAsInt(divAsInt(unixSecs, 60), 60) mod 24)
+  constant minute set to divAsInt(unixSecs, 60) mod 60
+  constant second set to (unixSecs mod 60)
   # days and years from Unix epoch
-  let unixDay be (unixSecs/daySecs).floor()
-  let years be ((unixDay + 1)/365.24).floor()
+  constant unixDay set to divAsInt(unixSecs, daySecs)
+  constant years set to ((unixDay + 1)/365.24).floor()
   # this year and weekday
-  let year be unixYear + years
-  let weekday be (unixDay + unixWeekday) mod 7
+  constant year set to unixYear + years
+  constant weekday set to (unixDay + unixWeekday) mod 7
   # day number (1-365 or 1-366) in this year
-  let day be dayInYear(year, unixDay)
-  return tuple(hour, minute, second, day, year, weekday)
+  constant day set to dayInYear(year, unixDay)
+  return (hour, minute, second, day, year, weekday)
 end function
 
+test test_dateTime
+  assert dateTime(1774946991) is (8, 49, 51, 90, 2026, 2)
+end test
+
 function dayInYear(year as Int, unixDays as Int) returns Int
-  # unixDays start at 0, months' day numbers start at 1
+  # unixDays start at 0, months, day numbers start at 1
   variable dayNumber set to unixDays + 1
   if year > unixYear then
     # discount previous nominal years
     set dayNumber to dayNumber - 365*(year - unixYear)
     # discount previous leap days
-    for y from unixYear to (year - 1) step 1
+    for y in range(unixYear, year)
       if leap(y) then
         set dayNumber to dayNumber - 1
       end if
@@ -57,23 +86,34 @@ function dayInYear(year as Int, unixDays as Int) returns Int
   return dayNumber
 end function
 
+test test_dayInYear
+  assert dayInYear(2025, 1) is -20087
+end test
+
 function leap(year as Int) returns Boolean
   variable leapYear set to false
   if (year mod 4) is 0 then
     set leapYear to true
-    if ((year mod 100) is 0) and (((year/100).floor() mod 4) isnt 0) then
+    if ((year mod 100) is 0) and ((divAsInt(year, 100) mod 4) isnt 0) then
       set leapYear to false
     end if
   end if
   return leapYear
 end function
 
+test test_leap
+  assert leap(2025) is false
+  assert leap(2024) is true
+  assert leap(1900) is false
+  assert leap(2000) is true
+end test
+
 function monthDay(startDays as List<of Int>, dayNumber as Int) returns (Int, Int)
   # get month (1-12) & day (1-31) from dayNumber (1-365 or 1-366)
   variable month set to 1
   variable day set to 0
   variable monthFound set to false
-  while not monthFound
+  while monthFound is false
     if (dayNumber < startDays[month]) then
       set monthFound to true
       set day to dayNumber - startDays[month - 1] + 1
@@ -81,15 +121,15 @@ function monthDay(startDays as List<of Int>, dayNumber as Int) returns (Int, Int
       set month to month + 1
     end if
   end while
-  return tuple(month, day)
+  return (month, day)
 end function
 
-function startDaysList(year as Int, startDays as ListImmutable<of Int>) returns List<of Int>
+function startDaysList(year as Int, startDays as List<of Int>) returns List<of Int>
   # alter month start days if leap year
-  variable startDaysL set to startDays.asList()
+  variable startDaysL set to getStartDays()
   if leap(year) then
-    for m from 2 to 12 step 1
-      set startDaysL to startDaysL.withPut(m, startDaysL[m] + 1)
+    for m in range(2, 13)
+      set startDaysL to startDaysL.withSet(m, startDaysL[m] + 1)
     end for
   end if
   return startDaysL
@@ -100,23 +140,42 @@ constant unixYear set to 1970
 
 constant unixWeekday set to 4
 
-# day and month names, and day numbers
 constant daySecs set to 86400
 
-constant weekdayNames set to {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
+# day and month names, and day numbers
+function getWeekdayName(weekDay as Int) returns String
+  variable names set to ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+  return names[weekDay]
+end function
 
-constant monthNames set to {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
+test test_getWeekdayName
+  assert getWeekdayName(0) is "Sun"
+  assert getWeekdayName(6) is "Sat"
+end test
 
-constant startDays set to {1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}
+function getMonthName(month as Int) returns String
+  variable names set to ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  return names[month - 1]
+end function
 
-# output edit strings
-constant s1 set to " "
+test test_getMonthName
+  assert getMonthName(1) is "Jan"
+  assert getMonthName(12) is "Dec"
+end test
 
-constant z2 set to "00"
+function getStartDays() returns List<of Int>
+  return [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366]
+end function
 
-constant cs set to ", "
+function padLwithZero(i as Int) returns String
+  return pad("L", "00", i.toString())
+end function
 
-constant co set to ":"
+test test_padLwithZero
+  assert padLwithZero(1) is "01"
+  assert padLwithZero(10) is "10"
+  assert padLwithZero(0) is "00"
+end test
 
 function pad(d as String, p as String, s as String) returns String
   # d: L or R for pad left or right
@@ -124,10 +183,11 @@ function pad(d as String, p as String, s as String) returns String
   # s: input string
   variable sR set to s
   if p.length() > s.length() then
-    if d.upperCase() is "L" then
-      set sR to (p + s)[(p + s).length() - p.length()..]
-    elif d.upperCase() is "R" then
-      set sR to (s + p)[..p.length()]
+    if d.upperCase().equals("L") then
+      constant ps set to p + s
+      set sR to ps.subString(ps.length() - p.length(), ps.length())
+    elif d.upperCase().equals("R") then
+      set sR to (s + p).subString(0, p.length())
     end if
   end if
   return sR
